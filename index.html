@@ -50,13 +50,15 @@
 
     .input-template,
     .textarea-template,
-    .checkbox-template {
+    .checkbox-template,
+    .radiobutton-template {
       position: absolute;
     }
 
     .input-template:hover,
     .textarea-template:hover,
-    .checkbox-template:hover {
+    .checkbox-template:hover,
+    .radiobutton-template:hover {
       background: rgba(255, 255, 255, 0.3);
     }
 
@@ -269,22 +271,82 @@
       height: 26px;
     }
 
-    .user-checkbox {
+    .user-checkbox,
+    .user-radiobutton {
       width: 100%;
       height: 100%;
     }
 
-    .user-checkbox.tab-focus {
+    .user-checkbox.tab-focus,
+    .user-radiobutton.tab-focus {
       border: 2px solid rgba(255, 255, 255, 0.5);
     }
 
-    .checkbox-appearance {
+    .checkbox-appearance,
+    .radiobutton-appearance {
       fill: #fff;
       visibility: hidden;
     }
 
-    .checkbox-appearance.checked {
+    .checkbox-appearance.checked,
+    .radiobutton-appearance.checked {
       visibility: visible;
+    }
+
+    .radiobutton-template.ok {
+      left: 827px;
+      top: 824px;
+      width: 167px;
+      height: 28px;
+    }
+
+    .radiobutton-template.mic-off {
+      left: 827px;
+      top: 857px;
+      width: 167px;
+      height: 28px;
+    }
+
+    .radiobutton-template.ng {
+      left: 827px;
+      top: 890px;
+      width: 167px;
+      height: 28px;
+    }
+
+    .radiobutton-template.solo {
+      left: 175px;
+      top: 1037px;
+      width: 175px;
+      height: 28px;
+    }
+
+    .radiobutton-template.join {
+      left: 175px;
+      top: 1070px;
+      width: 175px;
+      height: 28px;
+    }
+
+    .radiobutton-template.establish {
+      left: 175px;
+      top: 1103px;
+      width: 175px;
+      height: 28px;
+    }
+
+    .radiobutton-template.with-friends {
+      left: 355px;
+      top: 1037px;
+      width: 127px;
+      height: 28px;
+    }
+
+    .radiobutton-template.undecided {
+      left: 355px;
+      top: 1070px;
+      width: 127px;
+      height: 28px;
     }
   </style>
 
@@ -304,28 +366,28 @@
     </div>
     <div class="class">
       <div class="checkbox-template af">
-        <div class="user-checkbox in-class" data-group="af" tabindex="0"></div>
+        <div class="user-checkbox of-class" data-tag="af" tabindex="0"></div>
       </div>
       <div class="input-template af-level">
-        <input class="user-input af-level" data-group="af" type="text" />
+        <input class="user-input af-level" data-tag="af" type="text" />
       </div>
       <div class="checkbox-template ts">
-        <div class="user-checkbox in-class" data-group="ts" tabindex="0"></div>
+        <div class="user-checkbox of-class" data-tag="ts" tabindex="0"></div>
       </div>
       <div class="input-template ts-level">
-        <input class="user-input ts-level" data-group="ts" type="text" />
+        <input class="user-input ts-level" data-tag="ts" type="text" />
       </div>
       <div class="checkbox-template ba">
-        <div class="user-checkbox in-class" data-group="ba" tabindex="0"></div>
+        <div class="user-checkbox of-class" data-tag="ba" tabindex="0"></div>
       </div>
       <div class="input-template ba-level">
-        <input class="user-input ba-level" data-group="ba" type="text" />
+        <input class="user-input ba-level" data-tag="ba" type="text" />
       </div>
       <div class="checkbox-template sc">
-        <div class="user-checkbox in-class" data-group="sc" tabindex="0"></div>
+        <div class="user-checkbox of-class" data-tag="sc" tabindex="0"></div>
       </div>
       <div class="input-template sc-level">
-        <input class="user-input sc-level" data-group="sc" type="text" />
+        <input class="user-input sc-level" data-tag="sc" type="text" />
       </div>
     </div>
     <div class="input-template rank">
@@ -333,10 +395,10 @@
     </div>
     <div class="tests">
       <div class="checkbox-template cat">
-        <div class="user-checkbox in-tests" data-group="cat" tabindex="0"></div>
+        <div class="user-checkbox of-tests" data-tag="cat" tabindex="0"></div>
       </div>
       <div class="checkbox-template cbt">
-        <div class="user-checkbox in-tests" data-group="cbt" tabindex="0"></div>
+        <div class="user-checkbox of-tests" data-tag="cbt" tabindex="0"></div>
       </div>
     </div>
     <div class="playing-styles">
@@ -352,7 +414,33 @@
         <input class="user-input holidays" type="text" />
       </div>
     </div>
+    <div class="voice-chat">
+      <div class="radiobutton-template ok">
+        <div class="user-radiobutton of-voice-chat" data-group="voice-chat" data-tag="ok" tabindex="0"></div>
+      </div>
+      <div class="radiobutton-template mic-off">
+        <div class="user-radiobutton of-voice-chat" data-group="voice-chat" data-tag="mic-off" tabindex="0"></div>
+      </div>
+      <div class="radiobutton-template ng">
+        <div class="user-radiobutton of-voice-chat" data-group="voice-chat" data-tag="ng" tabindex="0"></div>
+      </div>
+    </div>
     <div class="guild-activity">
+      <div class="radiobutton-template solo">
+        <div class="user-radiobutton of-guild-activity" data-group="guild-activity" data-tag="solo" tabindex="0"></div>
+      </div>
+      <div class="radiobutton-template join">
+        <div class="user-radiobutton of-guild-activity" data-group="guild-activity" data-tag="join" tabindex="0"></div>
+      </div>
+      <div class="radiobutton-template establish">
+        <div class="user-radiobutton of-guild-activity" data-group="guild-activity" data-tag="establish" tabindex="0"></div>
+      </div>
+      <div class="radiobutton-template with-friends">
+        <div class="user-radiobutton of-guild-activity" data-group="guild-activity" data-tag="with-friends" tabindex="0"></div>
+      </div>
+      <div class="radiobutton-template undecided">
+        <div class="user-radiobutton of-guild-activity" data-group="guild-activity" data-tag="undecided" tabindex="0"></div>
+      </div>
       <div class="input-template guild-name">
         <input class="user-input guild-name" type="text" />
       </div>
@@ -372,14 +460,22 @@
 
   <g>
     <symbol id="check" viewBox="0 0 21.03 20.31">
-      <path d="M20.56,0,21,.81A41.08,41.08,0,0,0,12.55,9a35.32,35.32,0,0,0-5.64,9.7l-.69.46a11.94,11.94,0,0,0-1.53,1.15,13,13,0,0,0-.61-1.81l-.36-.89a22.1,22.1,0,0,0-2-4A2.48,2.48,0,0,0,0,12.33a3.58,3.58,0,0,1,2.2-1.16q1.3,0,2.85,3.49l.56,1.25a45.83,45.83,0,0,1,6.68-9.13A38.73,38.73,0,0,1,20.56,0Z"/>
+      <path d="M20.56,0,21,.81A41.08,41.08,0,0,0,12.55,9a35.32,35.32,0,0,0-5.64,9.7l-.69.46a11.94,11.94,0,0,0-1.53,1.15,13,13,0,0,0-.61-1.81l-.36-.89a22.1,22.1,0,0,0-2-4A2.48,2.48,0,0,0,0,12.33a3.58,3.58,0,0,1,2.2-1.16q1.3,0,2.85,3.49l.56,1.25a45.83,45.83,0,0,1,6.68-9.13A38.73,38.73,0,0,1,20.56,0Z" />
     </symbol>
-    <use class="checkbox-appearance" data-group="af" xlink:href="#check" x="459" y="502" width="21.03" height="20.31" />
-    <use class="checkbox-appearance" data-group="ts" xlink:href="#check" x="578" y="504" width="21.03" height="20.31" />
-    <use class="checkbox-appearance" data-group="ba" xlink:href="#check" x="697" y="504" width="21.03" height="20.31" />
-    <use class="checkbox-appearance" data-group="sc" xlink:href="#check" x="816" y="504" width="21.03" height="20.31" />
-    <use class="checkbox-appearance" data-group="cat" xlink:href="#check" x="913" y="516" width="21.03" height="20.31" />
-    <use class="checkbox-appearance" data-group="cbt" xlink:href="#check" x="913" y="541" width="21.03" height="20.31" />
+    <use class="checkbox-appearance" xlink:href="#check" x="459" y="502" width="21.03" height="20.31" data-tag="af" />
+    <use class="checkbox-appearance" xlink:href="#check" x="578" y="504" width="21.03" height="20.31" data-tag="ts" />
+    <use class="checkbox-appearance" xlink:href="#check" x="697" y="504" width="21.03" height="20.31" data-tag="ba" />
+    <use class="checkbox-appearance" xlink:href="#check" x="816" y="504" width="21.03" height="20.31" data-tag="sc" />
+    <use class="checkbox-appearance" xlink:href="#check" x="913" y="516" width="21.03" height="20.31" data-tag="cat" />
+    <use class="checkbox-appearance" xlink:href="#check" x="913" y="541" width="21.03" height="20.31" data-tag="cbt" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="836" y="824" width="21.03" height="20.31" data-tag="ok" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="836" y="856" width="21.03" height="20.31" data-tag="mic-off" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="836" y="889" width="21.03" height="20.31" data-tag="ng" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="184" y="1037" width="21.03" height="20.31" data-tag="solo" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="184" y="1070" width="21.03" height="20.31" data-tag="join" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="184" y="1103" width="21.03" height="20.31" data-tag="establish" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="363" y="1037" width="21.03" height="20.31" data-tag="with-friends" />
+    <use class="radiobutton-appearance" xlink:href="#check" x="363" y="1070" width="21.03" height="20.31" data-tag="undecided" />
   </g>
 </svg>
 
@@ -464,14 +560,14 @@
   });
 
   {
-    checkboxAppearances = [ ...document.getElementsByClassName('checkbox-appearance') ];
-    classLevels = [ ...document.querySelectorAll('.class .user-input') ];
+    const checkboxAppearances = [ ...document.getElementsByClassName('checkbox-appearance') ];
+    const classLevels = [ ...document.querySelectorAll('.class .user-input') ];
 
     for (const checkbox of document.getElementsByClassName('user-checkbox')) {
-      const appearance = checkboxAppearances.find(el => checkbox.dataset['group'] === el.dataset['group']);
+      const appearance = checkboxAppearances.find(el => checkbox.dataset['tag'] === el.dataset['tag']);
 
-      if (checkbox.classList.contains('in-class')) {
-        const level = classLevels.find(el => checkbox.dataset['group'] === el.dataset['group']);
+      if (checkbox.classList.contains('of-class')) {
+        const level = classLevels.find(el => checkbox.dataset['tag'] === el.dataset['tag']);
 
         level.addEventListener('change', () => {
           level.dataset['cache'] = level.value;
@@ -528,7 +624,49 @@
         }
       });
       checkbox.addEventListener('blur', () => {
-          checkbox.classList.remove('tab-focus');
+        checkbox.classList.remove('tab-focus');
+      });
+    }
+  }
+
+  {
+    const radiobuttonAppearances = [ ...document.getElementsByClassName('radiobutton-appearance') ];
+    let radiobuttonGroups = {};
+    for (const radiobutton of document.getElementsByClassName('user-radiobutton')) {
+      const appearance = radiobuttonAppearances.find(el => radiobutton.dataset['tag'] === el.dataset['tag']);
+      radiobuttonGroups[radiobutton.dataset['group']] = [ ...(radiobuttonGroups[radiobutton.dataset['group']] || []), { radiobutton, appearance } ];
+    }
+
+    for (const radiobuttonGroup of Object.values(radiobuttonGroups)) {
+      radiobuttonGroup.forEach(({ radiobutton, appearance }, _, group) => {
+        radiobutton.addEventListener('click', ev => {
+          for (const { appearance } of group) {
+            appearance.classList.remove('checked');
+          }
+          appearance.classList.add('checked');
+
+          if (radiobutton.classList.contains('tab-focus')) {
+            radiobutton.classList.remove('tab-focus');
+            emitConversion();
+            radiobutton.classList.add('tab-focus');
+          } else {
+            emitConversion();
+          }
+          ev.preventDefault();
+        });
+        radiobutton.addEventListener('keydown', ({ key }) => {
+          if (key === 'Enter') {
+            radiobutton.dispatchEvent(new Event('click'));
+          }
+        });
+        radiobutton.addEventListener('focus', () => {
+          if (isOnTabDown) {
+            radiobutton.classList.add('tab-focus');
+          }
+        });
+        radiobutton.addEventListener('blur', () => {
+          radiobutton.classList.remove('tab-focus');
+        });
       });
     }
   }
