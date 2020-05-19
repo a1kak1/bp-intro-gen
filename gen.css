@@ -1,0 +1,321 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+  outline: 0;
+  line-height: 1;
+}
+
+#gen {
+  width: 100%;
+  height: 100%;
+}
+
+#template-base {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.input-template,
+.textarea-template,
+.checkbox-template,
+.radiobutton-template {
+  position: absolute;
+}
+
+.input-template:hover,
+.textarea-template:hover,
+.checkbox-template:hover,
+.radiobutton-template:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.input-template.name {
+  left: 400px;
+  top: 262px;
+  width: 400px;
+  height: 54px;
+}
+
+.input-template.id {
+  left: 850px;
+  top: 279px;
+  width: 145px;
+  height: 36px;
+}
+
+.input-template.twitter {
+  left: 428px;
+  top: 338px;
+  width: 225px;
+  height: 32px;
+}
+
+.input-template.discord {
+  left: 775px;
+  top: 338px;
+  width: 220px;
+  height: 32px;
+}
+
+.input-template.af-level {
+  left: 449px;
+  top: 535px;
+  width: 55px;
+  height: 28px;
+}
+
+.input-template.ts-level {
+  left: 568px;
+  top: 535px;
+  width: 55px;
+  height: 28px;
+}
+
+.input-template.ba-level {
+  left: 687px;
+  top: 535px;
+  width: 55px;
+  height: 28px;
+}
+
+.input-template.sc-level {
+  left: 806px;
+  top: 535px;
+  width: 55px;
+  height: 28px;
+}
+
+.input-template.rank {
+  left: 909px;
+  top: 434px;
+  width: 86px;
+  height: 32px;
+}
+
+.input-template.weekdays {
+  left: 793px;
+  top: 678px;
+  width: 211px;
+  height: 28px;
+}
+
+.input-template.holidays {
+  left: 793px;
+  top: 731px;
+  width: 211px;
+  height: 28px;
+}
+
+.input-template.guild-name {
+  left: 502px;
+  top: 1063px;
+  width: 497px;
+  height: 54px;
+}
+
+.input-template.years {
+  left: 100px;
+  top: 1207px;
+  width: 89px;
+  height: 32px;
+}
+
+.user-input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: #fff;
+  text-align: center;
+  vertical-align: baseline;
+}
+
+.user-input.name,
+.user-input.guild-name {
+  font-size: 36px;
+}
+
+.user-input.id,
+.user-input.twitter,
+.user-input.discord,
+.user-input.af-level,
+.user-input.ts-level,
+.user-input.ba-level,
+.user-input.sc-level,
+.user-input.rank,
+.user-input.weekdays,
+.user-input.holidays,
+.user-input.years {
+  font-size: 24px;
+}
+
+.textarea-template.playing-style-comment {
+  left: 111px;
+  top: 854px;
+  width: 619px;
+  height: 74px;
+}
+
+.textarea-template.play-title {
+  left: 102px;
+  top: 1240px;
+  width: 358px;
+  height: 192px;
+}
+
+.textarea-template.free-comment {
+  left: 501px;
+  top: 1205px;
+  width: 497px;
+  height: 226px;
+}
+
+.user-textarea {
+  padding-top: 10px;
+  padding-left: 10px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: #fff;
+  line-height: 1.3;
+  text-align: left;
+  vertical-align: baseline;
+  resize: none;
+}
+
+.user-textarea.playing-style-comment {
+  font-size: 24px;
+}
+
+.user-textarea.play-title {
+  padding-top: 3px;
+  font-size: 24px;
+}
+
+.user-textarea.free-comment {
+  padding-top: 4px;
+  font-size: 24px;
+}
+
+.checkbox-template.af {
+  left: 410px;
+  top: 395px;
+  width: 109px;
+  height: 135px;
+}
+
+.checkbox-template.ts {
+  left: 529px;
+  top: 395px;
+  width: 109px;
+  height: 135px;
+}
+
+.checkbox-template.ba {
+  left: 648px;
+  top: 395px;
+  width: 109px;
+  height: 135px;
+}
+
+.checkbox-template.sc {
+  left: 767px;
+  top: 395px;
+  width: 109px;
+  height: 135px;
+}
+
+.checkbox-template.cat {
+  left: 904px;
+  top: 518px;
+  width: 81px;
+  height: 26px;
+}
+
+.checkbox-template.cbt {
+  left: 904px;
+  top: 544px;
+  width: 81px;
+  height: 26px;
+}
+
+.user-checkbox,
+.user-radiobutton {
+  width: 100%;
+  height: 100%;
+}
+
+.user-checkbox.tab-focus,
+.user-radiobutton.tab-focus {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.checkbox-appearance,
+.radiobutton-appearance {
+  fill: #fff;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.checkbox-appearance.checked,
+.radiobutton-appearance.checked {
+  visibility: visible;
+}
+
+.radiobutton-template.ok {
+  left: 827px;
+  top: 824px;
+  width: 167px;
+  height: 28px;
+}
+
+.radiobutton-template.mic-off {
+  left: 827px;
+  top: 857px;
+  width: 167px;
+  height: 28px;
+}
+
+.radiobutton-template.ng {
+  left: 827px;
+  top: 890px;
+  width: 167px;
+  height: 28px;
+}
+
+.radiobutton-template.solo {
+  left: 175px;
+  top: 1037px;
+  width: 175px;
+  height: 28px;
+}
+
+.radiobutton-template.join {
+  left: 175px;
+  top: 1070px;
+  width: 175px;
+  height: 28px;
+}
+
+.radiobutton-template.establish {
+  left: 175px;
+  top: 1103px;
+  width: 175px;
+  height: 28px;
+}
+
+.radiobutton-template.with-friends {
+  left: 355px;
+  top: 1037px;
+  width: 127px;
+  height: 28px;
+}
+
+.radiobutton-template.undecided {
+  left: 355px;
+  top: 1070px;
+  width: 127px;
+  height: 28px;
+}
