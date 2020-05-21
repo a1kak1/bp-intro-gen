@@ -1,77 +1,70 @@
-'use strict';
-
-const generator = document.getElementById('gen-root');
-const { width, height } = generator.viewBox.baseVal;
-const result = document.getElementById('result');
-
-const canvas = document.createElement('canvas');
-canvas.width = width;
-canvas.height = height;
-const ctx = canvas.getContext('2d');
-
-const image = new Image();
-image.addEventListener('load', () => {
-  ctx.clearRect(0, 0, width, height);
-  ctx.drawImage(image, 0, 0, width, height);
-  result.src = canvas.toDataURL();
-});
-
-function emitConversion() {
-  const url = new XMLSerializer().serializeToString(generator);
-  image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(url);
-}
-
-{
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', './bp_introduction.png');
-  xhr.responseType = 'blob';
-  xhr.addEventListener('load', () => {
-    const reader = new FileReader();
-    reader.addEventListener('loadend', () => {
-      document.getElementById('template-base').setAttribute('src', reader.result);
+/**
+ * @param {string} url
+ * @param {boolean} isReadAsDataURL
+ * @param {(data: string) => void} callback
+ */
+export function fetchExternalResource(url, isReadAsDataURL, callback) {
+  if (isReadAsDataURL) {
+    fetch(url).then(response => response.blob()).then(data => {
+      const reader = new FileReader();
+      reader.addEventListener('loadend', () => callback(reader.result));
+      reader.readAsDataURL(data);
     });
-    reader.readAsDataURL(xhr.response);
-  });
-  xhr.send();
-}
-
-{
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', './gen.css');
-  xhr.addEventListener('load', () => {
-    document.getElementById('gen-style').innerHTML = xhr.response;
-  });
-  xhr.send();
-}
-
-{
-  for (const input of document.getElementsByClassName('user-input')) {
-    input.addEventListener('change', () => {
-      input.setAttribute('value', input.value);
-      emitConversion();
-    });
-    input.addEventListener('keydown', ({ key }) => {
-      if (key === 'Enter') {
-        input.blur();
-      }
-    });
+  } else {
+    fetch(url).then(response => response.text()).then(data => callback(data));
   }
+}
 
-  for (const textarea of document.getElementsByClassName('user-textarea')) {
-    textarea.addEventListener('change', () => {
-      textarea.innerHTML = textarea.value.replace(/[&'`"<>]/g, match => {
-        return {
-          '&': '&amp;',
-          '\'': '&#x27;',
-          '`': '&#x60;',
-          '"': '&quot;',
-          '<': '&lt;',
-          '>': '&gt;'
-        }[match];
-      });
-      emitConversion();
-    });
+let emitImageGeneration = () => {};
+let emitOnImageGenerated = () => {};
+
+function emitImageGenerationBy(el) {
+  if (el.classList.contains('tab-focus')) {
+    el.classList.remove('tab-focus');
+    emitImageGeneration();
+    el.classList.add('tab-focus');
+  } else {
+    emitImageGeneration();
   }
+}
+
+/**
+ * @param {(dataURL: string) => void} listener
+ */
+export function onImageGenerated(listener) {
+  emitOnImageGenerated = listener;
+}
+
+/**
+ * @param {SVGSVGElement} generator
+ */
+export function enableImageGeneration(generator) {
+  const { width, height } = generator.viewBox.baseVal;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  const image = new Image();
+  image.addEventListener('load', () => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+    emitOnImageGenerated(canvas.toDataURL());
+  });
+
+  emitImageGeneration = () => {
+    const data = new XMLSerializer().serializeToString(generator);
+    image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data);
+  }
+}
+
+function addEnterClickTo(el) {
+  el.addEventListener('keydown', ({ key }) => {
+    if (key === 'Enter') {
+      el.dispatchEvent(new MouseEvent('click'));
+    }
+  });
 }
 
 let isOnTabDown = false;
@@ -86,114 +79,150 @@ document.addEventListener('keyup', ({ key }) => {
   }
 });
 
-{
-  const checkboxAppearances = [ ...document.getElementsByClassName('checkbox-appearance') ];
-  const classLevels = [ ...document.querySelectorAll('.class .user-input') ];
-
-  for (const checkbox of document.getElementsByClassName('user-checkbox')) {
-    const appearance = checkboxAppearances.find(el => checkbox.dataset['tag'] === el.dataset['tag']);
-
-    if (checkbox.classList.contains('of-class')) {
-      const level = classLevels.find(el => checkbox.dataset['tag'] === el.dataset['tag']);
-
-      level.addEventListener('change', () => {
-        level.dataset['cache'] = level.value;
-      });
-      level.addEventListener('input', () => {
-        if (level.value === '') {
-          appearance.classList.remove('checked');
-        } else {
-          appearance.classList.add('checked');
-        }
-      });
-
-      checkbox.addEventListener('click', ev => {
-        if (appearance.classList.toggle('checked')) {
-          level.value = level.dataset['cache'] || '';
-          level.focus();
-        } else {
-          level.dataset['cache'] = level.value;
-          level.value = '';
-        }
-        level.setAttribute('value', level.value);
-
-        if (checkbox.classList.contains('tab-focus')) {
-          checkbox.classList.remove('tab-focus');
-          emitConversion();
-          checkbox.classList.add('tab-focus');
-        } else {
-          emitConversion();
-        }
-        ev.preventDefault();
-      });
-    } else {
-      checkbox.addEventListener('click', ev => {
-        appearance.classList.toggle('checked');
-
-        if (checkbox.classList.contains('tab-focus')) {
-          checkbox.classList.remove('tab-focus');
-          emitConversion();
-          checkbox.classList.add('tab-focus');
-        } else {
-          emitConversion();
-        }
-        ev.preventDefault();
-      });
+function addTabFocusTo(el) {
+  el.addEventListener('focus', () => {
+    if (isOnTabDown) {
+      el.classList.add('tab-focus');
     }
-    checkbox.addEventListener('keydown', ({ key }) => {
+  });
+  el.addEventListener('blur', () => {
+    el.classList.remove('tab-focus');
+  });
+}
+
+const escapeSequenceMap = {
+  '"': '&quot;',
+  '&': '&amp;',
+  "'": '&#039;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '`': '&#096;'
+};
+
+function escapeHTML(value) {
+  return value.replace(/["&'<>`]/g, match => escapeSequenceMap[match]);
+}
+
+/**
+ * @param {string} query
+ */
+export function enableUserInput(query) {
+  for (const input of document.querySelectorAll(query)) {
+    input.addEventListener('change', () => {
+      input.setAttribute('value', escapeHTML(input.value));
+      emitImageGenerationBy(input);
+    });
+    input.addEventListener('keydown', ({ key }) => {
       if (key === 'Enter') {
-        checkbox.dispatchEvent(new Event('click'));
+        input.blur();
       }
     });
-    checkbox.addEventListener('focus', () => {
-      if(isOnTabDown) {
-        checkbox.classList.add('tab-focus');
-      }
-    });
-    checkbox.addEventListener('blur', () => {
-      checkbox.classList.remove('tab-focus');
-    });
+    addTabFocusTo(input);
   }
 }
 
-{
-  const radiobuttonAppearances = [ ...document.getElementsByClassName('radiobutton-appearance') ];
-  let radiobuttonGroups = {};
-  for (const radiobutton of document.getElementsByClassName('user-radiobutton')) {
-    const appearance = radiobuttonAppearances.find(el => radiobutton.dataset['tag'] === el.dataset['tag']);
-    radiobuttonGroups[radiobutton.dataset['group']] = [ ...(radiobuttonGroups[radiobutton.dataset['group']] || []), { radiobutton, appearance } ];
+/**
+ * @param {string} query
+ */
+export function enableUserTextarea(query) {
+  for (const textarea of document.querySelectorAll((query))) {
+    textarea.addEventListener('change', () => {
+      textarea.innerHTML = escapeHTML(textarea.value);
+      emitImageGenerationBy(textarea);
+    });
+    addTabFocusTo(textarea);
+  }
+}
+
+/**
+ * @param {string} query
+ * @param {string} appearanceQuery
+ */
+export function enableUserCheckbox(query, appearanceQuery) {
+  const appearances = [ ...document.querySelectorAll(appearanceQuery) ];
+
+  for (const checkbox of document.querySelectorAll(query)) {
+    const appearance = appearances.find(el => el.dataset['tag'] === checkbox.dataset['tag']);
+
+    checkbox.addEventListener('click', ev => {
+      appearance.classList.toggle('checked');
+      emitImageGenerationBy(checkbox);
+      ev.preventDefault();
+    });
+    addEnterClickTo(checkbox);
+    addTabFocusTo(checkbox);
+  }
+}
+
+/**
+ * @param {string} query
+ * @param {string} appearanceQuery
+ * @param {string} inputQuery
+ */
+export function enableUserCheckboxBoundToInput(query, appearanceQuery, inputQuery) {
+  const appearances = [ ...document.querySelectorAll(appearanceQuery) ];
+  const inputs = [ ...document.querySelectorAll(inputQuery) ];
+
+  for (const checkbox of document.querySelectorAll(query)) {
+    const appearance = appearances.find(el => el.dataset['tag'] === checkbox.dataset['tag']);
+    const input = inputs.find(el => el.dataset['tag'] === checkbox.dataset['tag']);
+
+    input.addEventListener('change', () => {
+      input.dataset['cache'] = input.value;
+    });
+    input.addEventListener('input', () => {
+      if (input.value === '') {
+        appearance.classList.remove('checked');
+      } else {
+        appearance.classList.add('checked');
+      }
+    });
+
+    checkbox.addEventListener('click', ev => {
+      if (appearance.classList.toggle('checked')) {
+        input.value = input.dataset['cache'] || '';
+        input.focus();
+      } else {
+        input.dataset['cache'] = input.value;
+        input.value = '';
+      }
+      input.setAttribute('value', input.value);
+      emitImageGenerationBy(checkbox);
+      ev.preventDefault();
+    });
+    addEnterClickTo(checkbox);
+    addTabFocusTo(checkbox);
+  }
+}
+
+/**
+ * @param {string} query
+ * @param {string} appearanceQuery
+ */
+export function enableUserRadiobutton(query, appearanceQuery) {
+  const appearances = [ ...document.querySelectorAll(appearanceQuery) ];
+  let radiobuttonGroupMap = {};
+  for (const radiobutton of document.querySelectorAll(query)) {
+    const appearance = appearances.find(el => el.dataset['tag'] === radiobutton.dataset['tag']);
+    const groupName = radiobutton.dataset['group'];
+    if (!radiobuttonGroupMap[groupName]) {
+      radiobuttonGroupMap[groupName] = [];
+    }
+    radiobuttonGroupMap[groupName].push({ radiobutton, appearance });
   }
 
-  for (const radiobuttonGroup of Object.values(radiobuttonGroups)) {
-    radiobuttonGroup.forEach(({ radiobutton, appearance }, _, group) => {
+  for (const radiobuttonGroup of Object.values(radiobuttonGroupMap)) {
+    for (const { radiobutton, appearance } of radiobuttonGroup) {
       radiobutton.addEventListener('click', ev => {
-        for (const { appearance } of group) {
+        for (const { appearance } of radiobuttonGroup) {
           appearance.classList.remove('checked');
         }
         appearance.classList.add('checked');
-
-        if (radiobutton.classList.contains('tab-focus')) {
-          radiobutton.classList.remove('tab-focus');
-          emitConversion();
-          radiobutton.classList.add('tab-focus');
-        } else {
-          emitConversion();
-        }
+        emitImageGenerationBy(radiobutton);
         ev.preventDefault();
       });
-      radiobutton.addEventListener('keydown', ({ key }) => {
-        if (key === 'Enter') {
-          radiobutton.dispatchEvent(new Event('click'));
-        }
-      });
-      radiobutton.addEventListener('focus', () => {
-        if (isOnTabDown) {
-          radiobutton.classList.add('tab-focus');
-        }
-      });
-      radiobutton.addEventListener('blur', () => {
-        radiobutton.classList.remove('tab-focus');
-      });
-    });
+      addEnterClickTo(radiobutton);
+      addTabFocusTo(radiobutton);
+    }
   }
 }

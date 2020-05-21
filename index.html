@@ -6,7 +6,15 @@
 
 <title>BP Intro Gen</title>
 
+<link rel="icon" type="image/png" href="./favicon.png" />
+
 <style>
+  :root {
+    --ratio: 0.6;
+    --width: calc(1050px * var(--ratio));
+    --height: calc(1485px * var(--ratio));
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -20,16 +28,22 @@
     height: 100vh;
   }
 
-  #gen-root {
-    width: 630px;
-    height: 891px;
+  #gen {
+    width: var(--width);
+    height: var(--height);
+  }
+
+  #result {
+    margin-left: 40px;
+    width: var(--width);
+    height: var(--height);
   }
 </style>
 
-<svg xmlns="http://www.w3.org/2000/svg" id="gen-root" viewBox="0 0 1050 1485">
+<svg id="gen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 1485" style="visibility: hidden;">
   <style id="gen-style">/* 'gen.css' is embeded here. */</style>
 
-  <foreignObject xmlns="http://www.w3.org/1999/xhtml" id="gen">
+  <foreignObject id="gen-body" xmlns="http://www.w3.org/1999/xhtml">
     <img id="template-base" draggable="false" />
     <div class="input-template name">
       <input class="user-input name" type="text" />
@@ -48,25 +62,25 @@
         <div class="user-checkbox of-class" data-tag="af" tabindex="0"></div>
       </div>
       <div class="input-template af-level">
-        <input class="user-input af-level" data-tag="af" type="text" />
+        <input class="user-input of-class af-level" data-tag="af" type="text" />
       </div>
       <div class="checkbox-template ts">
         <div class="user-checkbox of-class" data-tag="ts" tabindex="0"></div>
       </div>
       <div class="input-template ts-level">
-        <input class="user-input ts-level" data-tag="ts" type="text" />
+        <input class="user-input of-class ts-level" data-tag="ts" type="text" />
       </div>
       <div class="checkbox-template ba">
         <div class="user-checkbox of-class" data-tag="ba" tabindex="0"></div>
       </div>
       <div class="input-template ba-level">
-        <input class="user-input ba-level" data-tag="ba" type="text" />
+        <input class="user-input of-class ba-level" data-tag="ba" type="text" />
       </div>
       <div class="checkbox-template sc">
         <div class="user-checkbox of-class" data-tag="sc" tabindex="0"></div>
       </div>
       <div class="input-template sc-level">
-        <input class="user-input sc-level" data-tag="sc" type="text" />
+        <input class="user-input of-class sc-level" data-tag="sc" type="text" />
       </div>
     </div>
     <div class="input-template rank">
@@ -141,12 +155,12 @@
     <symbol id="check" viewBox="0 0 21.03 20.31">
       <path d="M20.56,0,21,.81A41.08,41.08,0,0,0,12.55,9a35.32,35.32,0,0,0-5.64,9.7l-.69.46a11.94,11.94,0,0,0-1.53,1.15,13,13,0,0,0-.61-1.81l-.36-.89a22.1,22.1,0,0,0-2-4A2.48,2.48,0,0,0,0,12.33a3.58,3.58,0,0,1,2.2-1.16q1.3,0,2.85,3.49l.56,1.25a45.83,45.83,0,0,1,6.68-9.13A38.73,38.73,0,0,1,20.56,0Z" />
     </symbol>
-    <use class="checkbox-appearance" xlink:href="#check" x="459" y="502" width="21.03" height="20.31" data-tag="af" />
-    <use class="checkbox-appearance" xlink:href="#check" x="578" y="504" width="21.03" height="20.31" data-tag="ts" />
-    <use class="checkbox-appearance" xlink:href="#check" x="697" y="504" width="21.03" height="20.31" data-tag="ba" />
-    <use class="checkbox-appearance" xlink:href="#check" x="816" y="504" width="21.03" height="20.31" data-tag="sc" />
-    <use class="checkbox-appearance" xlink:href="#check" x="913" y="516" width="21.03" height="20.31" data-tag="cat" />
-    <use class="checkbox-appearance" xlink:href="#check" x="913" y="541" width="21.03" height="20.31" data-tag="cbt" />
+    <use class="checkbox-appearance of-class" xlink:href="#check" x="459" y="502" width="21.03" height="20.31" data-tag="af" />
+    <use class="checkbox-appearance of-class" xlink:href="#check" x="578" y="504" width="21.03" height="20.31" data-tag="ts" />
+    <use class="checkbox-appearance of-class" xlink:href="#check" x="697" y="504" width="21.03" height="20.31" data-tag="ba" />
+    <use class="checkbox-appearance of-class" xlink:href="#check" x="816" y="504" width="21.03" height="20.31" data-tag="sc" />
+    <use class="checkbox-appearance of-tests" xlink:href="#check" x="913" y="516" width="21.03" height="20.31" data-tag="cat" />
+    <use class="checkbox-appearance of-tests" xlink:href="#check" x="913" y="541" width="21.03" height="20.31" data-tag="cbt" />
     <use class="radiobutton-appearance" xlink:href="#check" x="836" y="824" width="21.03" height="20.31" data-tag="ok" />
     <use class="radiobutton-appearance" xlink:href="#check" x="836" y="856" width="21.03" height="20.31" data-tag="mic-off" />
     <use class="radiobutton-appearance" xlink:href="#check" x="836" y="889" width="21.03" height="20.31" data-tag="ng" />
@@ -158,6 +172,27 @@
   </g>
 </svg>
 
-<img id="result" style="margin-left: 40px; width: 630px; height: 891px;" />
+<img id="result" />
 
-<script src="./gen.js"></script>
+<script type="module">
+  import * as Generator from './gen.js';
+
+  const gen = document.getElementById('gen');
+  const result = document.getElementById('result');
+
+  Generator.fetchExternalResource('./gen.css', false, data => {
+    document.getElementById('gen-style').innerHTML = data;
+    gen.style.setProperty('visibility', 'visible');
+  });
+  Generator.fetchExternalResource('./bp_introduction.png', true, url => {
+    document.getElementById('template-base').src = url;
+  });
+
+  Generator.onImageGenerated(url => result.src = url);
+  Generator.enableImageGeneration(gen);
+  Generator.enableUserInput('.user-input');
+  Generator.enableUserTextarea('.user-textarea');
+  Generator.enableUserCheckboxBoundToInput('.user-checkbox.of-class', '.checkbox-appearance.of-class', '.user-input.of-class');
+  Generator.enableUserCheckbox('.user-checkbox.of-tests', '.checkbox-appearance.of-tests');
+  Generator.enableUserRadiobutton('.user-radiobutton', '.radiobutton-appearance');
+</script>
