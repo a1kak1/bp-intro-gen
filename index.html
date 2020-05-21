@@ -95,6 +95,30 @@
       </div>
     </div>
     <div class="playing-styles">
+      <div class="slider-template casual-to-hardcore">
+        <div class="user-slider" data-group="casual-to-hardcore" tabindex="0">
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="0" data-offset="2px"></div>
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="1" data-offset="71px"></div>
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="2" data-offset="131px"></div>
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="3" data-offset="193px"></div>
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="4" data-offset="255px"></div>
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="5" data-offset="315px"></div>
+          <div class="user-slider-scale" data-group="casual-to-hardcore" data-value="6" data-offset="384px"></div>
+        </div>
+        <div class="slider-appearance" data-group="casual-to-hardcore" data-basic-width="48px"></div>
+      </div>
+      <div class="slider-template long-range-to-close-range">
+        <div class="user-slider" data-group="long-range-to-close-range" tabindex="0">
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="0" data-offset="2px"></div>
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="1" data-offset="71px"></div>
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="2" data-offset="131px"></div>
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="3" data-offset="193px"></div>
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="4" data-offset="255px"></div>
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="5" data-offset="315px"></div>
+          <div class="user-slider-scale" data-group="long-range-to-close-range" data-value="6" data-offset="384px"></div>
+        </div>
+        <div class="slider-appearance" data-group="long-range-to-close-range" data-basic-width="48px"></div>
+      </div>
       <div class="textarea-template playing-style-comment">
         <textarea class="user-textarea playing-style-comment"></textarea>
       </div>
@@ -195,4 +219,5 @@
   Generator.enableUserCheckboxBoundToInput('.user-checkbox.of-class', '.checkbox-appearance.of-class', '.user-input.of-class');
   Generator.enableUserCheckbox('.user-checkbox.of-tests', '.checkbox-appearance.of-tests');
   Generator.enableUserRadiobutton('.user-radiobutton', '.radiobutton-appearance');
+  Generator.enableUserSlider('.user-slider', '.user-slider-scale', '.slider-appearance');
 </script>
