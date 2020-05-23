@@ -45,6 +45,15 @@
 
   <foreignObject id="gen-body" xmlns="http://www.w3.org/1999/xhtml">
     <img id="template-base" draggable="false" />
+    <div class="avatar-template">
+      <div class="user-avatar" tabindex="0">
+        <img class="avatar-image" draggable="false" />
+      </div>
+      <div class="user-avatar-info">
+        <div class="scale"></div>
+        <div class="filter"></div>
+      </div>
+    </div>
     <div class="input-template name">
       <input class="user-input name" type="text" />
     </div>
@@ -214,6 +223,7 @@
 
   Generator.onImageGenerated(url => result.src = url);
   Generator.enableImageGeneration(gen);
+  Generator.enableUserAvatar('.user-avatar', '.avatar-image', '.user-avatar-info .scale', '.user-avatar-info .filter');
   Generator.enableUserInput('.user-input');
   Generator.enableUserTextarea('.user-textarea');
   Generator.enableUserCheckboxBoundToInput('.user-checkbox.of-class', '.checkbox-appearance.of-class', '.user-input.of-class');

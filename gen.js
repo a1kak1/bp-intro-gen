@@ -103,6 +103,437 @@ function addTabFocusTo(el) {
   });
 }
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+class ImageFilter {
+  constructor(image, onFiltered = () => {}) {
+    this.image = image;
+    this.onFiltered = onFiltered;
+    this.filters = {
+      brightness: {
+        name: '明るさ',
+        type: 'brightness',
+        unit: '%',
+        default: 100,
+        min: 75,
+        max: 175,
+        delta: 25
+      },
+      contrast: {
+        name: 'コントラスト',
+        type: 'contrast',
+        unit: '%',
+        default: 100,
+        min: 75,
+        max: 175,
+        delta: 25
+      },
+      grayscale: {
+        name: 'グレースケール',
+        type: 'grayscale',
+        unit: '%',
+        default: 0,
+        min: 0,
+        max: 100,
+        delta: 25
+      },
+      saturation: {
+        name: '彩度',
+        type: 'saturate',
+        unit: '%',
+        default: 100,
+        min: 75,
+        max: 175,
+        delta: 25
+      },
+      sepia: {
+        name: 'セピア',
+        type: 'sepia',
+        unit: '%',
+        default: 0,
+        min: 0,
+        max: 100,
+        delta: 25
+      },
+      hue: {
+        name: '色相反転',
+        type: 'hue-rotate',
+        unit: 'deg',
+        default: 0,
+        min: 0,
+        max: 315,
+        delta: 45
+      },
+      inversion: {
+        name: '階調反転',
+        type: 'invert',
+        unit: '%',
+        default: 0,
+        min: 0,
+        max: 100,
+        delta: 25
+      },
+      blur: {
+        name: 'ぼかし',
+        type: 'blur',
+        unit: 'px',
+        default: 0,
+        min: 0,
+        max: 2,
+        delta: 1
+      }
+    };
+  }
+
+  rotate(filterId) {
+    const filter = this.filters[filterId];
+    filter.isRotated = true;
+    if (!filter.level) {
+      filter.level = filter.default;
+    }
+    filter.level += filter.delta;
+    if (filterId === 'inversion' && filter.level <= 50) {
+      filter.level = 50 + filter.delta;
+    }
+    if (filter.level > filter.max) {
+      filter.level = filter.min;
+    }
+    if (filter.level === filter.default) {
+      filter.isRotated = false;
+    }
+    this.render();
+  }
+
+  render() {
+    let value = '';
+    for (const filter of Object.values(this.filters)) {
+      if (filter.isRotated) {
+        value += `${filter.type}(${filter.level}${filter.unit}) `;
+      }
+    }
+    this.image.style.setProperty('filter', value);
+    this.onFiltered(this.filters);
+  }
+
+  clear() {
+    for (const filter of Object.values(this.filters)) {
+      filter.level = filter.default;
+      filter.isRotated = false;
+    }
+    this.image.style.setProperty('filter', '');
+    this.onFiltered(this.filters);
+  }
+
+  brightness() {
+    this.rotate('brightness');
+  }
+
+  contrast() {
+    this.rotate('contrast');
+  }
+
+  grayscale() {
+    this.rotate('grayscale');
+  }
+
+  saturation() {
+    this.rotate('saturation');
+  }
+
+  sepia() {
+    this.rotate('sepia');
+  }
+
+  hue() {
+    this.rotate('hue');
+  }
+
+  inversion() {
+    this.rotate('inversion');
+  }
+
+  blur() {
+    this.rotate('blur');
+  }
+}
+
+class AvatarImage {
+  static scaleMin = 1;
+  static scaleMax = 10;
+  static scaleDelta = 0.5;
+
+  isLoaded = false;
+  isOnDrag = false;
+
+  constructor(avatar, image, onScaled = () => {}, onFiltered = () => {}) {
+    this.avatar = avatar;
+    this.image = image;
+    this.onScaled = onScaled;
+    this.onFiltered = onFiltered;
+
+    this.image.addEventListener('load', () => {
+      this.isLoaded = true;
+      this.baseSize = {
+        width: this.avatar.offsetWidth,
+        height: this.avatar.offsetHeight
+      };
+      this.scaleRate = AvatarImage.scaleMin;
+      this.filter = new ImageFilter(this.image, this.onFiltered);
+      this.isLandscape = this.image.width > this.image.height;
+
+      this.alignInitial();
+      this.image.style.setProperty('visibility', 'visible');
+      this.avatar.classList.add('loaded');
+    });
+
+    this.image.addEventListener('mousedown', () => {
+      if (isOnMouseLeftDown) {
+        this.isOnDrag = true;
+      }
+    });
+    document.addEventListener('mousemove', ev => {
+      if (this.isOnDrag) {
+        const style = window.getComputedStyle(document.documentElement);
+        const zoom = style.getPropertyValue('zoom') * style.getPropertyValue('--ratio');
+        this.move(ev.movementX / zoom, ev.movementY / zoom);
+      }
+    });
+    document.addEventListener('mouseup', () => {
+      this.isOnDrag = false;
+    });
+
+    this.image.addEventListener('wheel', ev => {
+      const zoom = window.getComputedStyle(document.documentElement).getPropertyValue('zoom');
+      this.scale(ev.deltaY, ev.offsetX * zoom, ev.offsetY * zoom);
+      ev.preventDefault();
+    });
+  }
+
+  load(file) {
+    const reader = new FileReader();
+    reader.addEventListener('loadend', () => {
+      this.image.style.setProperty('visibility', 'hidden');
+      this.image.src = reader.result;
+    });
+    reader.readAsDataURL(file);
+  }
+
+  alignInitial() {
+    if (this.isLandscape) {
+      this.image.style.setProperty('width', 'auto');
+      this.image.style.setProperty('height', '100%');
+      this.image.style.setProperty('left', `calc(50% - ${this.image.width / 2}px)`);
+      this.image.style.setProperty('top', `0`);
+    } else {
+      this.image.style.setProperty('width', '100%');
+      this.image.style.setProperty('height', 'auto');
+      this.image.style.setProperty('left', `0`);
+      this.image.style.setProperty('top', `calc(50% - ${this.image.height / 2}px)`);
+    }
+    this.scaleRate = AvatarImage.scaleMin;
+    this.onScaled(this.scaleRate);
+  }
+
+  move(dx, dy) {
+    this.image.style.setProperty('left', clamp(this.image.offsetLeft + dx, this.baseSize.width - this.image.width, 0) + 'px');
+    this.image.style.setProperty('top', clamp(this.image.offsetTop + dy, this.baseSize.height - this.image.height, 0) + 'px');
+  }
+
+  scale(compareVal, originX, originY) {
+    if (!this.isScalable(compareVal)) {
+      return;
+    }
+
+    const origin = {
+      x: originX,
+      y: originY
+    };
+    origin.ratioX = origin.x / this.image.width;
+    origin.ratioY = origin.y / this.image.height;
+
+    const isToZoomIn = compareVal <= 0;
+    const delta = AvatarImage.scaleDelta * (this.scaleRate < 2 || this.scaleRate < 2 + AvatarImage.scaleDelta && !isToZoomIn ? 0.5 : 1);
+    this.scaleRate = clamp(this.scaleRate + delta * (isToZoomIn ? 1 : -1), AvatarImage.scaleMin, AvatarImage.scaleMax);
+    if (this.isLandscape) {
+      this.image.style.setProperty('height', 100 * this.scaleRate + '%');
+    } else {
+      this.image.style.setProperty('width', 100 * this.scaleRate + '%');
+    }
+
+    const dx = this.image.width * origin.ratioX - origin.x;
+    const dy = this.image.height * origin.ratioY - origin.y;
+    this.move(dx * -1, dy * -1);
+
+    this.onScaled(this.scaleRate);
+  }
+
+  zoomIn(originX, originY) {
+    this.scale(-1, originX, originY);
+  }
+
+  zoomOut(originX, originY) {
+    this.scale(1, originX, originY);
+  }
+
+  isScalable(compareVal) {
+    const isToZoomIn = compareVal <= 0;
+    if (this.scaleRate >= AvatarImage.scaleMax && isToZoomIn) {
+      return false;
+    }
+    if (this.scaleRate <= AvatarImage.scaleMin && !isToZoomIn) {
+      return false;
+    }
+    return true;
+  }
+
+  centerOffsetX() {
+    return this.baseSize.width / 2 - this.image.offsetLeft;
+  }
+
+  centerOffsetY() {
+    return this.baseSize.height / 2 - this.image.offsetTop;
+  }
+}
+
+/**
+ * @param {string} query
+ * @param {string} imageQuery
+ * @param {string} scaleInfoQuery
+ * @param {string} filterInfoQuery
+ */
+export function enableUserAvatar(query, imageQuery, scaleInfoQuery, filterInfoQuery) {
+  const avatar = document.querySelector(query);
+  const image = document.querySelector(imageQuery);
+  const scaleInfo = document.querySelector(scaleInfoQuery);
+  const filterInfo = document.querySelector(filterInfoQuery);
+
+  const onScaled = scale => {
+    scaleInfo.innerHTML = scale === AvatarImage.scaleMin ? '' : `ズーム ${100 * scale}%`;
+  };
+  const onFiltered = filters => {
+    let value = '';
+    for (const filter of Object.values(filters)) {
+      if (filter.isRotated) {
+        value += `${filter.name} ${filter.level}${filter.unit}<br />`;
+      }
+    }
+    filterInfo.innerHTML = value;
+  };
+
+  const avatarImage = new AvatarImage(avatar, image, onScaled, onFiltered);
+
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept ='image/*';
+
+  avatar.addEventListener('blur', () => {
+    emitImageGenerationBy(avatar);
+  });
+
+  avatar.addEventListener('click', () => {
+    if (!avatar.classList.contains('loaded')) {
+      avatar.dispatchEvent(new MouseEvent('dblclick'));
+    }
+  });
+  avatar.addEventListener('dblclick', () => {
+    fileInput.click();
+
+    fileInput.addEventListener('change', () => {
+      avatarImage.load(fileInput.files[0]);
+    });
+  });
+
+  avatar.addEventListener('dragover', ev => {
+    ev.preventDefault();
+  });
+  avatar.addEventListener('drop', ev => {
+    for (const file of ev.dataTransfer.files) {
+      if (file.type.startsWith('image/')) {
+        avatarImage.load(file);
+        break;
+      }
+    }
+    ev.preventDefault();
+  });
+  document.addEventListener('dragover', ev => {
+    ev.preventDefault();
+  });
+  document.addEventListener('drop', ev => {
+    ev.preventDefault();
+  });
+
+  avatar.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') {
+      avatar.dispatchEvent(new MouseEvent('dblclick'));
+    }
+    if (!avatarImage.isLoaded) {
+      return;
+    }
+    switch (ev.key) {
+      case 'b':
+        avatarImage.filter.brightness();
+        break;
+      case 'c':
+        avatarImage.filter.contrast();
+        break;
+      case 'g':
+        avatarImage.filter.grayscale();
+        break;
+      case 's':
+        avatarImage.filter.saturation();
+        break;
+      case 'p':
+        avatarImage.filter.sepia();
+        break;
+      case 'h':
+        avatarImage.filter.hue();
+        break;
+      case 'i':
+        avatarImage.filter.inversion();
+        break;
+      case 'l':
+        avatarImage.filter.blur();
+        break;
+      case 'x':
+        avatarImage.filter.clear();
+        break;
+      case 'ArrowLeft':
+        avatarImage.move(10, 0);
+        ev.preventDefault();
+        break;
+      case 'ArrowRight':
+        avatarImage.move(-10, 0);
+        ev.preventDefault();
+        break;
+      case 'ArrowUp':
+        avatarImage.move(0, 10);
+        ev.preventDefault();
+        break;
+      case 'ArrowDown':
+        avatarImage.move(0, -10);
+        ev.preventDefault();
+        break;
+      case '=': // '+' of US Keyboard
+        // fallthrough
+      case ';': // '+' of JIS Keyboard
+        avatarImage.zoomIn(avatarImage.centerOffsetX(), avatarImage.centerOffsetY());
+        ev.preventDefault();
+        break;
+      case '-':
+        avatarImage.zoomOut(avatarImage.centerOffsetX(), avatarImage.centerOffsetY());
+        ev.preventDefault();
+        break;
+      case '0':
+        avatarImage.alignInitial();
+        break;
+    }
+  });
+
+  addTabFocusTo(avatar);
+}
+
 const escapeSequenceMap = {
   '"': '&quot;',
   '&': '&amp;',
@@ -244,10 +675,6 @@ const arrowOffsetMap = {
   'ArrowLeft': -1,
   'ArrowRight': 1
 };
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
 
 function renderSlider(slider, scales, appearance) {
   const scale = scales.find(el => el.dataset['value'] === slider.dataset['value']);
