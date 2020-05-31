@@ -157,7 +157,7 @@ class ImageFilter {
         max: 100,
         delta: 25
       },
-      hue: {
+      hueRotation: {
         name: '色相反転',
         type: 'hue-rotate',
         unit: 'deg',
@@ -173,7 +173,10 @@ class ImageFilter {
         default: 0,
         min: 0,
         max: 100,
-        delta: 25
+        delta: 25,
+        rotate() {
+          this.level = (this.level > 50 ? this.level : 50) + this.delta;
+        }
       },
       blur: {
         name: 'ぼかし',
@@ -193,9 +196,10 @@ class ImageFilter {
     if (!filter.level) {
       filter.level = filter.default;
     }
-    filter.level += filter.delta;
-    if (filterId === 'inversion' && filter.level <= 50) {
-      filter.level = 50 + filter.delta;
+    if (filter.rotate) {
+      filter.rotate();
+    } else {
+      filter.level += filter.delta;
     }
     if (filter.level > filter.max) {
       filter.level = filter.min;
@@ -246,8 +250,8 @@ class ImageFilter {
     this.rotate('sepia');
   }
 
-  hue() {
-    this.rotate('hue');
+  hueRotation() {
+    this.rotate('hueRotation');
   }
 
   inversion() {
@@ -369,12 +373,12 @@ class AvatarImage {
     this.onScaled(this.scaleRate);
   }
 
-  zoomIn(originX, originY) {
-    this.scale(-1, originX, originY);
+  zoomIn() {
+    this.scale(-1, this.centerOffsetX(), this.centerOffsetY());
   }
 
-  zoomOut(originX, originY) {
-    this.scale(1, originX, originY);
+  zoomOut() {
+    this.scale(1, this.centerOffsetX(), this.centerOffsetY());
   }
 
   isScalable(compareVal) {
@@ -408,6 +412,12 @@ export function enableUserAvatar(query, imageQuery, scaleInfoQuery, filterInfoQu
   const image = document.querySelector(imageQuery);
   const scaleInfo = document.querySelector(scaleInfoQuery);
   const filterInfo = document.querySelector(filterInfoQuery);
+  const arrowKeyDown = {
+    'ArrowLeft': 0,
+    'ArrowRight': 0,
+    'ArrowUp': 0,
+    'ArrowDown': 0
+  };
 
   const onScaled = scale => {
     scaleInfo.innerHTML = scale === AvatarImage.scaleMin ? '' : `ズーム ${100 * scale}%`;
@@ -441,7 +451,9 @@ export function enableUserAvatar(query, imageQuery, scaleInfoQuery, filterInfoQu
     fileInput.click();
 
     fileInput.addEventListener('change', () => {
-      avatarImage.load(fileInput.files[0]);
+      if (fileInput.files.length > 0) {
+        avatarImage.load(fileInput.files[0]);
+      }
     });
   });
 
@@ -472,64 +484,89 @@ export function enableUserAvatar(query, imageQuery, scaleInfoQuery, filterInfoQu
       return;
     }
     switch (ev.key) {
+      case 'B':
+        // fallthrough
       case 'b':
         avatarImage.filter.brightness();
         break;
+      case 'C':
+        // fallthrough
       case 'c':
         avatarImage.filter.contrast();
         break;
+      case 'G':
+        // fallthrough
       case 'g':
         avatarImage.filter.grayscale();
         break;
+      case 'S':
+        // fallthrough
       case 's':
         avatarImage.filter.saturation();
         break;
+      case 'P':
+        // fallthrough
       case 'p':
         avatarImage.filter.sepia();
         break;
+      case 'H':
+        // fallthrough
       case 'h':
-        avatarImage.filter.hue();
+        avatarImage.filter.hueRotation();
         break;
+      case 'I':
+        // fallthrough
       case 'i':
         avatarImage.filter.inversion();
         break;
+      case 'L':
+        // fallthrough
       case 'l':
         avatarImage.filter.blur();
         break;
+      case 'X':
+        // fallthrough
       case 'x':
         avatarImage.filter.clear();
         break;
-      case 'ArrowLeft':
-        avatarImage.move(10, 0);
-        ev.preventDefault();
-        break;
-      case 'ArrowRight':
-        avatarImage.move(-10, 0);
-        ev.preventDefault();
-        break;
-      case 'ArrowUp':
-        avatarImage.move(0, 10);
-        ev.preventDefault();
-        break;
-      case 'ArrowDown':
-        avatarImage.move(0, -10);
-        ev.preventDefault();
-        break;
-      case '=': // '+' of US Keyboard
+      case ';': // same key as '+' on JIS Keyboard
+        // US配列では':'と対になるので、US配列キーボードでの入力時は弾きたいが区別不能
         // fallthrough
-      case ';': // '+' of JIS Keyboard
-        avatarImage.zoomIn(avatarImage.centerOffsetX(), avatarImage.centerOffsetY());
+      case '+':
+        avatarImage.zoomIn();
         ev.preventDefault();
         break;
+      case '_': // '-' with 'Shift' on US Keyboard
+        if (!ev.getModifierState('Shift')) {
+          break;
+        }
+        // fallthrough
       case '-':
-        avatarImage.zoomOut(avatarImage.centerOffsetX(), avatarImage.centerOffsetY());
+        avatarImage.zoomOut();
+        ev.preventDefault();
+        break;
+      case '=': // '-' with 'Shift' on JIS Keyboard or same key as '+' on US Keyboard
+        ev.getModifierState('Shift') ? avatarImage.zoomOut() : avatarImage.zoomIn();
         ev.preventDefault();
         break;
       case '0':
         avatarImage.alignInitial();
         break;
     }
+    if (ev.key.startsWith('Arrow')) {
+      arrowKeyDown[ev.key] = 1;
+      const delta = 10;
+      const dx = (arrowKeyDown['ArrowLeft'] - arrowKeyDown['ArrowRight']) * delta;
+      const dy = (arrowKeyDown['ArrowUp'] - arrowKeyDown['ArrowDown']) * delta;
+      avatarImage.move(dx, dy);
+    }
   });
+
+  avatar.addEventListener('keyup', ({ key }) => {
+    if (key.startsWith('Arrow')) {
+      arrowKeyDown[key] = 0;
+    }
+  })
 
   addTabFocusTo(avatar);
 }

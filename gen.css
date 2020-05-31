@@ -54,66 +54,48 @@
   clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0);
 }
 
-.user-avatar.loaded:hover::before {
-  content: '';
-  position: absolute;
-  top: calc(33.3% - 1px);
-  width: 100%;
-  height: calc(33.4% + 2px);
-  border-top: 2px solid rgba(255, 255, 255, 0.5);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.user-avatar.loaded:hover::after {
-  content: '';
-  position: absolute;
-  left: calc(33.3% - 1px);
-  width: calc(33.4% + 2px);
-  height: 100%;
-  border-left: 2px solid rgba(255, 255, 255, 0.5);
-  border-right: 2px solid rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-}
-
-.user-avatar.loaded.tab-focus::before {
-  content: '';
-  position: absolute;
-  top: calc(33.3% - 1px);
-  width: 100%;
-  height: calc(33.4% + 2px);
-  border-top: 2px solid rgba(255, 255, 255, 0.5);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.user-avatar.loaded.tab-focus::after {
-  content: '';
-  position: absolute;
-  left: calc(33.3% - 1px);
-  width: calc(33.4% + 2px);
-  height: 100%;
-  border-left: 2px solid rgba(255, 255, 255, 0.5);
-  border-right: 2px solid rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-}
-
 .user-avatar-info {
   position: absolute;
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  left: -2px;
-  top: -2px;
+  width: 100%;
+  height: 100%;
+  top: 0;
   padding-top: 4px;
   padding-left: 6px;
   pointer-events: none;
 }
 
+.user-avatar.tab-focus + .user-avatar-info {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.user-avatar.loaded:hover + .user-avatar-info::before,
+.user-avatar.loaded.tab-focus + .user-avatar-info::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(33.3% - 1px);
+  width: 100%;
+  height: calc(33.4% + 2px);
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.user-avatar.loaded:hover + .user-avatar-info::after,
+.user-avatar.loaded.tab-focus + .user-avatar-info::after {
+  content: '';
+  position: absolute;
+  left: calc(33.3% - 1px);
+  top: 0;
+  width: calc(33.4% + 2px);
+  height: 100%;
+  border-left: 2px solid rgba(255, 255, 255, 0.5);
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
 .user-avatar-info .scale,
 .user-avatar-info .filter {
-  margin-bottom: 0.5em;
   color: rgba(255, 255, 255, 0.5);
   font-size: 16px;
   line-height: 1.4;
@@ -121,17 +103,10 @@
 }
 
 .user-avatar.loaded:hover + .user-avatar-info .scale,
-.user-avatar.loaded:hover + .user-avatar-info .filter {
-  visibility: visible;
-}
-
 .user-avatar.loaded.tab-focus + .user-avatar-info .scale,
+.user-avatar.loaded:hover + .user-avatar-info .filter,
 .user-avatar.loaded.tab-focus + .user-avatar-info .filter {
   visibility: visible;
-}
-
-.user-avatar.tab-focus + .user-avatar-info {
-  border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 .avatar-image {
